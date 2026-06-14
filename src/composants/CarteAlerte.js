@@ -8,13 +8,26 @@ import { View, Text, StyleSheet } from 'react-native';
 import { COULEURS, ROBOT_COULEURS } from '../constantes/theme';
 import { couleurStatut, formaterHeure } from '../constantes/utilitaires';
 
+// Traduit les noms de KPIs Docker en libellés lisibles
+const LIBELLES_KPI = {
+  temperature:       'Température',
+  cadence:           'Cadence',
+  defauts:           'Taux de défauts',
+  temp_percage:      'Température perçage',
+  cadence_percage:   'Cadence perçage',
+  defauts_percage:   'Taux de défauts perçage',
+  temp_hydraulique:  'Température hydraulique',
+  cadence_rivetage:  'Cadence rivetage',
+  defauts_rivetage:  'Taux de défauts rivetage',
+};
+
 export default function CarteAlerte({ alerte }) {
   const { robot, kpi, level, value, horodatage, timestamp } = alerte;
-  const estCritique = level === 'critical' || level === 'critique';
-  const couleur     = estCritique ? COULEURS.critique : COULEURS.warning;
+  const estCritique  = level === 'critical' || level === 'critique';
+  const couleur      = estCritique ? COULEURS.critique : COULEURS.warning;
   const couleurRobot = ROBOT_COULEURS[robot] ?? COULEURS.accent;
-  const kpiLibelle  = kpi?.replace(/_/g, ' ') ?? '—';
-  const heure       = formaterHeure(horodatage ?? timestamp);
+  const kpiLibelle   = LIBELLES_KPI[kpi] ?? kpi?.replace(/_/g, ' ') ?? '—';
+  const heure        = formaterHeure(horodatage ?? timestamp);
 
   return (
     <View style={[styles.carte, { borderLeftColor: couleur }]}>
@@ -35,7 +48,7 @@ export default function CarteAlerte({ alerte }) {
       </View>
 
       <Text style={styles.kpi}>{kpiLibelle.toUpperCase()}</Text>
-      <Text style={styles.valeur} style={[styles.valeur, { color: couleur }]}>
+      <Text style={[styles.valeur, { color: couleur }]}>
         Valeur mesurée : <Text style={{ fontWeight: 'bold' }}>{value}</Text>
       </Text>
     </View>

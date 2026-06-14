@@ -19,6 +19,27 @@ import ServiceNotifications from './ServiceNotifications';
 // ── Contexte ─────────────────────────────────
 const ContexteWebSocket = createContext(null);
 
+// Docker envoie des noms génériques (temperature, cadence, defauts)
+// L'application utilise des noms précis (temp_percage, cadence_rivetage, ...)
+const MAPPING_KPI = {
+  R01: { temperature: 'temp_percage',     cadence: 'cadence_percage',  defauts: 'defauts_percage'  },
+  R02: { temperature: 'temp_percage',     cadence: 'cadence_percage',  defauts: 'defauts_percage'  },
+  R03: { temperature: 'temp_hydraulique', cadence: 'cadence_rivetage', defauts: 'defauts_rivetage' },
+  R04: { temperature: 'temp_hydraulique', cadence: 'cadence_rivetage', defauts: 'defauts_rivetage' },
+};
+
+// Docker envoie les statuts en anglais majuscule (CRITICAL, WARNING, NORMAL)
+// L'application utilise des statuts en français minuscule (critique, warning, normal)
+function normaliserStatut(statut) {
+  if (!statut) return 'normal';
+  switch (statut.toUpperCase()) {
+    case 'CRITICAL': return 'critique';
+    case 'WARNING':  return 'warning';
+    case 'NORMAL':   return 'normal';
+    default:         return statut.toLowerCase();
+  }
+}
+
 // ── Provider ─────────────────────────────────
 export function FournisseurWebSocket({ children }) {
   const [donneesKpi, setDonneesKpi]   = useState({});
@@ -32,18 +53,11 @@ export function FournisseurWebSocket({ children }) {
 
   // ── Gestion d'un message KPI ────────────────
   const traiterKpi = useCallback((msg) => {
-    // Changement ici : on utilise let pour pouvoir réassigner le nom de la clé kpi
     let { robot, kpi, value, unit, status } = msg;
     if (!robot || !kpi) return;
 
-    // 🔄 TRADUCTION MAGIQUE : Reconnecte les données Docker ("temperature") aux écrans
-    if (kpi === 'temperature') {
-      if (robot === 'R01' || robot === 'R02') {
-        kpi = 'temp_percage';
-      } else if (robot === 'R03' || robot === 'R04') {
-        kpi = 'temp_hydraulique';
-      }
-    }
+    // Traduit le nom du KPI Docker vers le nom utilisé dans l'application
+    kpi = MAPPING_KPI[robot]?.[kpi] ?? kpi;
 
     setDonneesKpi((prev) => ({
       ...prev,
@@ -52,7 +66,7 @@ export function FournisseurWebSocket({ children }) {
         [kpi]: {
           valeur:      value,
           unite:       unit,
-          statut:      status ?? 'normal',
+          statut:      normaliserStatut(status),
           horodatage:  new Date().toISOString(),
         },
       },
@@ -62,18 +76,16 @@ export function FournisseurWebSocket({ children }) {
   // ── Gestion d'une alerte ────────────────────
   const traiterAlerte = useCallback((msg) => {
     let { robot, kpi } = msg;
-    
-    // Même traduction pour les alertes pour éviter les bugs visuels
-    if (kpi === 'temperature') {
-      if (robot === 'R01' || robot === 'R02') kpi = 'temp_percage';
-      if (robot === 'R03' || robot === 'R04') kpi = 'temp_hydraulique';
-    }
+
+    // Même traduction pour les alertes
+    kpi = MAPPING_KPI[robot]?.[kpi] ?? kpi;
 
     const alerte = {
       ...msg,
       kpi,
+      level:       normaliserStatut(msg.level),
       id:          `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      horodatage:  new Date().toISOString(),
+      horodatage:  msg.timestamp ?? new Date().toISOString(),
     };
 
     setAlertes((prev) => [alerte, ...prev].slice(0, 100));

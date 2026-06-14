@@ -6,8 +6,7 @@
     "start": "expo start",
     "web": "expo start --web",
     "android": "expo start --android",
-    "ios": "expo start --ios",
-    "demo": "node serveur-demo.js"
+    "ios": "expo start --ios"
   },
   "dependencies": {
     "@expo/metro-runtime": "~4.0.1",
@@ -28,7 +27,6 @@
     "react-native-web": "^0.19.13"
   },
   "devDependencies": {
-    "@babel/core": "^7.24.0",
-    "ws": "^8.21.0"
+    "@babel/core": "^7.24.0"
   }
 }

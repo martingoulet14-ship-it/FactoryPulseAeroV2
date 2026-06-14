@@ -1,14 +1,15 @@
 // ─────────────────────────────────────────────
 //  Configuration réseau
 //
-//  Pour le serveur de démo (node serveur-demo.js) :
-//    - Expo Web ou simulateur iOS  → 'localhost'
-//    - Émulateur Android           → '10.0.2.2'
-//    - Vrai téléphone (Wi-Fi)      → l'IP de ton PC (ex: '192.168.1.42')
-//      → trouve ton IP avec : ipconfig (Windows) ou ifconfig (Mac/Linux)
+//  L'application se connecte au backend Docker.
+//  L'IP doit être celle de la machine qui fait tourner docker compose.
+//
+//  Pour tester depuis un vrai téléphone (Expo Go) :
+//    → Téléphone et PC doivent être sur le même réseau Wi-Fi
+//    → Utilise : ipconfig (Windows) pour trouver ton IP
 // ─────────────────────────────────────────────
 
-export const ADRESSE_BACKEND = 'localhost';
+export const ADRESSE_BACKEND = '192.168.1.160';
 export const PORT_BACKEND    = 8000;
 
 export const URL_BASE = `http://${ADRESSE_BACKEND}:${PORT_BACKEND}`;

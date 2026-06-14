@@ -20,7 +20,7 @@ import { pireStatutRobot, couleurStatut } from '../constantes/utilitaires';
 import CarteRobot from '../composants/CarteRobot';
 import BanniereConnexion from '../composants/BanniereConnexion';
 
-const TOUS_LES_ROBOTS = ['R-01', 'R-02', 'R-03', 'R-04'];
+const TOUS_LES_ROBOTS = ['R01', 'R02', 'R03', 'R04'];
 
 export default function EcranTableauDeBord({ navigation }) {
   const { donneesKpi, connecte, derniereMaj } = utiliserWebSocket();
@@ -73,13 +73,13 @@ export default function EcranTableauDeBord({ navigation }) {
 
         {/* ── Robots de perçage ────────────────── */}
         <Text style={styles.enteteSection}>— ROBOTS DE PERÇAGE (FlexTrack)</Text>
-        {['R-01', 'R-02'].map((id) => (
+        {['R01', 'R02'].map((id) => (
           <CarteRobot key={id} idRobot={id} onAppuyer={() => allerVersDetail(id)} />
         ))}
 
         {/* ── Robots de rivetage ───────────────── */}
         <Text style={styles.enteteSection}>— ROBOTS DE RIVETAGE (Kuka 7 axes)</Text>
-        {['R-03', 'R-04'].map((id) => (
+        {['R03', 'R04'].map((id) => (
           <CarteRobot key={id} idRobot={id} onAppuyer={() => allerVersDetail(id)} />
         ))}
 

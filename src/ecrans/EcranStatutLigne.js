@@ -25,7 +25,7 @@ import {
   formaterValeur,
 } from '../constantes/utilitaires';
 
-const TOUS_LES_ROBOTS = ['R-01', 'R-02', 'R-03', 'R-04'];
+const TOUS_LES_ROBOTS = ['R01', 'R02', 'R03', 'R04'];
 
 // ── Sous-composant : résumé d'un robot ────────
 function RangeeRobot({ idRobot }) {
@@ -76,7 +76,8 @@ function RangeeRobot({ idRobot }) {
 export default function EcranStatutLigne() {
   const { statut, chargement, recharger } = utiliserStatutLigne();
 
-  const estBloque    = statut?.statut === 'bloque' || statut?.status === 'blocked';
+  // Docker retourne status: "BLOQUE", notre demo retourne statut: "bloque"
+  const estBloque = statut?.statut === 'bloque' || statut?.status === 'BLOQUE' || statut?.blocked === true;
   const couleurLigne = estBloque ? COULEURS.critique : COULEURS.ok;
   const libelleLigne = estBloque ? 'BLOQUÉE' : 'OPÉRATIONNELLE';
 
@@ -94,9 +95,9 @@ export default function EcranStatutLigne() {
               <Text style={[styles.titreStatutGlobal, { color: couleurLigne }]}>
                 LIGNE {libelleLigne}
               </Text>
-              {estBloque && statut?.cause && (
+              {estBloque && (statut?.cause || statut?.block_reason) && (
                 <Text style={styles.causeBlockage}>
-                  ▸ Cause : {statut.cause}
+                  ▸ Cause : {statut.cause ?? statut.block_reason}
                 </Text>
               )}
             </>
@@ -110,7 +111,7 @@ export default function EcranStatutLigne() {
         <View style={styles.carteDependance}>
           <Text style={styles.titreDependance}>⛓  DÉPENDANCE SÉQUENTIELLE</Text>
           <View style={styles.chaineDependance}>
-            {['R-01', 'R-02'].map((id) => (
+            {['R01', 'R02'].map((id) => (
               <View key={id} style={[styles.noeud, { borderColor: ROBOT_COULEURS[id] }]}>
                 <Text style={[styles.noeudTexte, { color: ROBOT_COULEURS[id] }]}>{id}</Text>
                 <Text style={styles.noeudLabel}>Perçage</Text>
@@ -122,7 +123,7 @@ export default function EcranStatutLigne() {
               <Text style={styles.noeudConditionSous}>bloque</Text>
             </View>
             <Text style={styles.fleche}>→</Text>
-            {['R-03', 'R-04'].map((id) => (
+            {['R03', 'R04'].map((id) => (
               <View key={id} style={[styles.noeud, { borderColor: ROBOT_COULEURS[id] }]}>
                 <Text style={[styles.noeudTexte, { color: ROBOT_COULEURS[id] }]}>{id}</Text>
                 <Text style={styles.noeudLabel}>Rivetage</Text>

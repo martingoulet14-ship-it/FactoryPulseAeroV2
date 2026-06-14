@@ -39,8 +39,8 @@ export const STATUT_COULEURS = {
 
 // Une couleur unique par robot
 export const ROBOT_COULEURS = {
-  'R-01': '#00C8FF',
-  'R-02': '#A78BFA',
-  'R-03': '#FB923C',
-  'R-04': '#F43F5E',
+  'R01': '#00C8FF',
+  'R02': '#A78BFA',
+  'R03': '#FB923C',
+  'R04': '#F43F5E',
 };

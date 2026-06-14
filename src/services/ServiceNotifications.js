@@ -8,18 +8,29 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 
-// Les notifs s'affichent même app au premier plan
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge:  true,
-  }),
-});
+// Les notifications push ne fonctionnent pas sur le web
+const NOTIFS_DISPONIBLES = Platform.OS !== 'web';
+
+// Les notifs s'affichent même app au premier plan (mobile seulement)
+if (NOTIFS_DISPONIBLES) {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge:  true,
+    }),
+  });
+}
 
 const ServiceNotifications = {
   // Initialisation : demande des permissions + création des canaux Android
   async initialiser() {
+    // Sur le web, les notifications push ne sont pas supportées par Expo
+    if (!NOTIFS_DISPONIBLES) {
+      console.log('[Notifs] Web détecté — notifications désactivées');
+      return false;
+    }
+
     if (!Device.isDevice) {
       console.log('[Notifs] Appareil simulé — permissions limitées');
       return false;
@@ -60,6 +71,9 @@ const ServiceNotifications = {
 
   // Envoie une notification locale à partir d'une alerte reçue du backend
   async envoyerNotificationAlerte(alerte) {
+    // Silencieux sur le web — pas d'erreur, juste ignoré
+    if (!NOTIFS_DISPONIBLES) return;
+
     const { robot, kpi, level, value } = alerte;
     const estCritique = level === 'critical' || level === 'critique';
 

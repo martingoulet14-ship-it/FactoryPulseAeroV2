@@ -99,7 +99,7 @@ export default function CarteRobot({ idRobot, onAppuyer }) {
             return (
               <View key={def.cle} style={styles.celluleKpi}>
                 <Text style={styles.kpiLabel} numberOfLines={1}>
-                  {def.label.split(' ').slice(0, 2).join(' ')}
+                  {def.label}
                 </Text>
                 <Text style={[styles.kpiValeur, { color: couleurKpi }]}>{valeurAff}</Text>
                 <Text style={styles.kpiUnite}>{def.unite}</Text>
