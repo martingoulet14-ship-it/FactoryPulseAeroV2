@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "FactoryPulse Aéro",
+    "slug": "factorypulse-aero",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#00C8FF",
+          "sounds": []
+        }
+      ]
+    ],
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0A0C0F"
+      },
+      "permissions": ["NOTIFICATIONS", "VIBRATE"]
+    },
+    "ios": {
+      "supportsTablet": false
+    }
+  }
+}

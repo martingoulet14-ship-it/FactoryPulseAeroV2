@@ -7,7 +7,7 @@ Application React Native / Expo de surveillance temps réel d'une ligne de rivet
 ## Structure du projet
 
 ```
-FactoryPulseAero/
+FactoryPulseAeroV2/
 ├── App.js                          # Point d'entrée — navigation + providers
 ├── app.json                        # Config Expo
 ├── package.json
@@ -55,7 +55,7 @@ FactoryPulseAero/
 
 ```bash
 # 1. Installer les dépendances
-cd FactoryPulseAero
+cd FactoryPulseAeroV2
 npm install
 
 # 2. Configurer l'IP du backend
