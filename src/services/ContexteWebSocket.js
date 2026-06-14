@@ -14,6 +14,7 @@ import React, {
 } from 'react';
 
 import { URL_WS } from '../constantes/config';
+import ServiceApi from './ServiceApi';
 import ServiceNotifications from './ServiceNotifications';
 
 // ── Contexte ─────────────────────────────────
@@ -176,6 +177,54 @@ export function FournisseurWebSocket({ children }) {
       wsRef.current?.close();
     };
   }, [connecter]);
+
+  // ── Fallback REST ─────────────────────────────
+  // Quand un robot est bloqué, le simulateur arrête d'envoyer des messages
+  // WebSocket. On interroge l'API REST toutes les 5 s pour récupérer
+  // les dernières valeurs connues et afficher l'état réel du robot.
+  useEffect(() => {
+    const ROBOTS_IDS = ['R01', 'R02', 'R03', 'R04'];
+
+    const pollRest = async () => {
+      for (const idRobot of ROBOTS_IDS) {
+        try {
+          const data = await ServiceApi.obtenirKpisRobot(idRobot);
+          // Le backend retourne { kpis: { temperature: {value, unit}, ... } }
+          const kpisDocker = data?.kpis ?? {};
+
+          setDonneesKpi((prev) => {
+            const kpisActuels = prev[idRobot] ?? {};
+            const maj = { ...kpisActuels };
+
+            for (const [cleDocker, kpiData] of Object.entries(kpisDocker)) {
+              // Traduit le nom Docker → nom application
+              const cleApp = MAPPING_KPI[idRobot]?.[cleDocker] ?? cleDocker;
+
+              // Met à jour seulement si plus récent ou absent
+              const horodatageRest = kpiData.updated_at ?? new Date().toISOString();
+              const horodatageActuel = kpisActuels[cleApp]?.horodatage;
+
+              if (!horodatageActuel || new Date(horodatageRest) >= new Date(horodatageActuel)) {
+                maj[cleApp] = {
+                  valeur:     kpiData.value,
+                  unite:      kpiData.unit,
+                  statut:     normaliserStatut(data.status),
+                  horodatage: horodatageRest,
+                };
+              }
+            }
+            return { ...prev, [idRobot]: maj };
+          });
+        } catch {
+          // Silencieux — le WebSocket reste la source principale
+        }
+      }
+    };
+
+    pollRest();
+    const intervalle = setInterval(pollRest, 5000);
+    return () => clearInterval(intervalle);
+  }, []);
 
   return (
     <ContexteWebSocket.Provider value={{ donneesKpi, alertes, connecte, derniereMaj }}>
